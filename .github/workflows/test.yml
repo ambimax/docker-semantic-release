@@ -18,6 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/checkout@v2
+        with:
+          name: ambimax/testrepo-semantic-composer-releases
+          path: testrepo-semantic-composer-releases
+
       - name: Run build with tests
         run: |
           ssh -vT git@github.com
