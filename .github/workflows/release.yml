@@ -13,8 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build image
+      - uses: actions/checkout@v2
+        with:
+          repository: ambimax/testrepo-semantic-composer-releases
+          ref: main
+          path: testrepo-semantic-composer-releases
+          token: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+
+      - name: Run build with tests
         run: bash bin/build
+        env:
+          SKIP_TESTREPO_SETUP: 1
+          GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
 
       - name: Display all docker images
         if: ${{ always() }}
