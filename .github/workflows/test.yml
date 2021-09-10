@@ -21,4 +21,4 @@ jobs:
       - name: Run build with tests
         run: bash bin/build
         env:
-          GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
