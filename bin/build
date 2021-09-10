@@ -45,7 +45,7 @@ add_testrepo_commit() {
 
     echo "$1" >> CHANGES.md
     git add CHANGES.md
-    git commit -m "$1"
+    git -c user.name='Github Action' -c user.email='github_action@example.com' commit -m "$1"
 
     cd .. || error_exit "error when committing changes"
 }
