@@ -61,7 +61,7 @@ if [ -d testrepo-semantic-composer-releases ]; then
     rm -rf testrepo-semantic-composer-releases
 fi
 
-git clone git@github.com:ambimax/testrepo-semantic-composer-releases.git
+git clone https://github.com/ambimax/testrepo-semantic-composer-releases.git
 
 add_testrepo_commit "fix: small hotfix"
 add_testrepo_commit "feat: feature added"
