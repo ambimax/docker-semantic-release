@@ -24,8 +24,7 @@ jobs:
           path: testrepo-semantic-composer-releases
 
       - name: Run build with tests
-        run: |
-          ssh -vT git@github.com
-          bash bin/build
+        run: bash bin/build
         env:
+          SKIP_TESTREPO_SETUP: 1
           GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}

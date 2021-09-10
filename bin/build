@@ -31,6 +31,15 @@ assert_output() {
     fi
 }
 
+setup_testrepo() {
+    if [ -d testrepo-semantic-composer-releases ]; then
+        output_info "Lösche vorhandenes testrepo"
+        rm -rf testrepo-semantic-composer-releases
+    fi
+
+    git clone git@github.com:ambimax/testrepo-semantic-composer-releases.git
+}
+
 add_testrepo_commit() {
     cd testrepo-semantic-composer-releases || error_exit "error when entering testrepo"
 
@@ -56,12 +65,9 @@ docker build --build-arg GITHUB_TOKEN -t ambimax/semantic-release:latest .
 ############################################################################################
 # Prepare testrepo
 ############################################################################################
-if [ -d testrepo-semantic-composer-releases ]; then
-    output_info "Lösche altest testrepo"
-    rm -rf testrepo-semantic-composer-releases
+if [ -z "${SKIP_TESTREPO_SETUP}" ]; then
+    setup_testrepo
 fi
-
-git clone https://github.com/ambimax/testrepo-semantic-composer-releases.git
 
 add_testrepo_commit "fix: small hotfix"
 add_testrepo_commit "feat: feature added"
