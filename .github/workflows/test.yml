@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run build with tests
-        run: bash bin/build
+        run: |
+          ssh -vT git@github.com
+          bash bin/build
         env:
           GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
