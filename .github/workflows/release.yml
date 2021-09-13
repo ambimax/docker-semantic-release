@@ -40,9 +40,16 @@ jobs:
           username: ${{ secrets.DOCKER_REG_USERNAME }}
           password: ${{ secrets.DOCKER_REG_PASSWORD }}
 
+      - name: Rollout semantic release
+        id: release
+        uses: docker://ambimax/semantic-release:latest
+        env:
+          GH_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+
       - name: Push image
         if: github.ref == 'refs/heads/main'
         run: bash .github/scripts/push-image.sh
         env:
           DOCKER_USER: ${{ secrets.DOCKER_REG_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_REG_PASSWORD }}
+          SEMANTIC_VERSION: ${{ steps.release.output.SEMANTIC_VERSION }}
