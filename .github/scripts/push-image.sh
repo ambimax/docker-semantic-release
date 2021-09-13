@@ -14,7 +14,7 @@ error_exit() {
 ############################################################################################
 # Validate
 ############################################################################################
-docker images | grep "ambimax/semantic-release:latest" || error_exit "Image ambimax/semantic-release:latest not found"
+docker images | grep -e "ambimax/semantic-release.*latest" || error_exit "Image ambimax/semantic-release:latest not found"
 [ -n "$SEMANTIC_VERSION" ] || error_exit "\$SEMANTIC_VERSION not set"
 
 ############################################################################################
