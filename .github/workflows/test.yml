@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - renovate/**
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Shellcheck
+        run: |
+          shellcheck .github/scripts/push-image.sh
+          shellcheck bin/build
+          shellcheck entrypoint.sh
+          shellcheck npm-install.sh
+
+      - uses: actions/checkout@v2
+        with:
+          repository: ambimax/testrepo-semantic-composer-releases
+          ref: main
+          path: testrepo-semantic-composer-releases
+          token: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+
+      - name: Run build with tests
+        run: bash bin/build
+        env:
+          SKIP_TESTREPO_SETUP: 1
+          GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}

@@ -1,0 +1,7 @@
+Dockerfile
+Makefile
+node_modules
+entrypoint
+composer
+scripts
+testrepo*

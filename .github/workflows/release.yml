@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: actions/checkout@v2
+        with:
+          repository: ambimax/testrepo-semantic-composer-releases
+          ref: main
+          path: testrepo-semantic-composer-releases
+          token: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+
+      - name: Run build with tests
+        run: bash bin/build
+        env:
+          SKIP_TESTREPO_SETUP: 1
+          GITHUB_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+
+      - name: Display all docker images
+        if: ${{ always() }}
+        run: docker images
+
+      - name: Login to Docker Registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v1
+        with:
+          # We push to the default registry currently. If you want to push to a different registry,
+          # uncomment the line below.
+          # login-server: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_REG_USERNAME }}
+          password: ${{ secrets.DOCKER_REG_PASSWORD }}
+
+      - name: Push image
+        if: github.ref == 'refs/heads/main'
+        run: bash .github/scripts/push-image.sh
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_REG_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_REG_PASSWORD }}

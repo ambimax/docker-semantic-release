@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+
+# exit on error
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+error_exit() {
+    echo -e "${RED}$1${NC}"
+    exit 1
+}
+
+output_success() {
+    echo -e "${GREEN}$1${NC}"
+}
+output_failure() {
+    echo -e "${GREEN}$1${NC}"
+}
+
+output_info() {
+    echo "$1"
+}
+
+assert_output() {
+    if echo "$OUTPUT" | grep -q "$1"; then
+        output_success "$1 was found"
+    else
+        error_exit "$1 not found"
+    fi
+}
+
+setup_testrepo() {
+    if [ -d testrepo-semantic-composer-releases ]; then
+        output_info "Lösche vorhandenes testrepo"
+        rm -rf testrepo-semantic-composer-releases
+    fi
+
+    git clone git@github.com:ambimax/testrepo-semantic-composer-releases.git
+}
+
+add_testrepo_commit() {
+    cd testrepo-semantic-composer-releases || error_exit "error when entering testrepo"
+
+    echo "$1" >> CHANGES.md
+    git add CHANGES.md
+    git -c user.name='Github Action' -c user.email='github_action@example.com' commit -m "$1"
+
+    cd .. || error_exit "error when committing changes"
+}
+
+validate_docker_version() {
+    SERVER_VERSION=$(docker version -f "{{.Server.Version}}")
+    SERVER_VERSION_MAJOR=$(echo "$SERVER_VERSION"| cut -d'.' -f 1)
+    SERVER_VERSION_MINOR=$(echo "$SERVER_VERSION"| cut -d'.' -f 2)
+
+    if [ "${SERVER_VERSION_MAJOR}" -ge 20 ] && \
+    [ "${SERVER_VERSION_MINOR}" -ge 10 ]; then
+        echo "Docker version >= 20.10 it's ok"
+    else
+        echo "Docker version less than 20.10 can't continue"
+        exit 1
+    fi
+}
+
+scan_secrets_in_docker_history() {
+    output_info "Checking for vulnerabilities"
+    if docker history --no-trunc ambimax/semantic-release:latest | grep "${GITHUB_TOKEN}"; then
+        error_exit "Content of \$GITHUB_TOKEN found in history!!!!!"
+    else
+        output_info "No GITHUB_TOKEN found in history"
+    fi
+}
+
+############################################################################################
+# Validate
+############################################################################################
+[ -n "$GITHUB_TOKEN" ] || error_exit "\$GITHUB_TOKEN must be set"
+
+validate_docker_version
+
+
+############################################################################################
+# Build docker image
+############################################################################################
+export DOCKER_BUILDKIT=1
+docker build --secret id=GITHUB_TOKEN -t ambimax/semantic-release:latest .
+
+scan_secrets_in_docker_history
+
+############################################################################################
+# Prepare testrepo
+############################################################################################
+if [ -z "${SKIP_TESTREPO_SETUP}" ]; then
+    setup_testrepo
+fi
+
+add_testrepo_commit "fix: small hotfix"
+add_testrepo_commit "feat: feature added"
+
+
+############################################################################################
+# Validate testrepo
+############################################################################################
+OUTPUT=$(docker run --rm -e GITHUB_TOKEN --workdir "/github/workspace" --volume "$PWD/testrepo-semantic-composer-releases:/github/workspace" ambimax/semantic-release:latest)
+
+echo "$OUTPUT"
+
+assert_output "Running semantic-release version"
+assert_output "@semantic-release/github"
+assert_output "@semantic-release/changelog"
+assert_output "@semantic-release/git"
+assert_output "@semantic-release/commit-analyzer"
+assert_output "@semantic-release/release-notes-generator"
+assert_output "@ambimax/semantic-release-composer"
+assert_output "The next release version is 1.1.0"
+assert_output "1.1.0 (https://github.com/ambimax/testrepo-semantic-composer-releases"
+assert_output "### Bug Fixes"
+assert_output "### Features"
+
+
+############################################################################################
+# Validate testrepo with default .releasesrc.json
+############################################################################################
+rm "$PWD/testrepo-semantic-composer-releases/.releaserc.json"
+OUTPUT=$(docker run --rm -e GITHUB_TOKEN --workdir "/github/workspace" --volume "$PWD/testrepo-semantic-composer-releases:/github/workspace" ambimax/semantic-release:latest)
+
+echo "$OUTPUT"
+
+assert_output "Running semantic-release version"
+assert_output "@semantic-release/github"
+assert_output "@semantic-release/git"
+assert_output "@semantic-release/commit-analyzer"
+assert_output "@semantic-release/release-notes-generator"
+assert_output "@ambimax/semantic-release-composer"
+assert_output "The next release version is 1.1.0"
+assert_output "1.1.0 (https://github.com/ambimax/testrepo-semantic-composer-releases"
+assert_output "### Bug Fixes"
+assert_output "### Features"
+
+
+############################################################################################
+# Done
+############################################################################################
+output_success "ALL TESTS WERE SUCCESSFUL"
