@@ -18,6 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Shellcheck
+        run: |
+          shellcheck .github/scripts/push-image.sh
+          shellcheck bin/build
+          shellcheck entrypoint.sh
+          shellcheck npm-install.sh
+
       - uses: actions/checkout@v2
         with:
           repository: ambimax/testrepo-semantic-composer-releases

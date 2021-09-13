@@ -54,11 +54,9 @@ validate_docker_version() {
     SERVER_VERSION=$(docker version -f "{{.Server.Version}}")
     SERVER_VERSION_MAJOR=$(echo "$SERVER_VERSION"| cut -d'.' -f 1)
     SERVER_VERSION_MINOR=$(echo "$SERVER_VERSION"| cut -d'.' -f 2)
-    SERVER_VERSION_BUILD=$(echo "$SERVER_VERSION"| cut -d'.' -f 3)
 
     if [ "${SERVER_VERSION_MAJOR}" -ge 20 ] && \
-    [ "${SERVER_VERSION_MINOR}" -ge 10 ]  && \
-    [ "${SERVER_VERSION_BUILD}" -ge 0 ]; then
+    [ "${SERVER_VERSION_MINOR}" -ge 10 ]; then
         echo "Docker version >= 20.10 it's ok"
     else
         echo "Docker version less than 20.10 can't continue"
