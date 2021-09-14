@@ -47,8 +47,16 @@ jobs:
           GH_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
 
       - name: Push image
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && env.SEMANTIC_VERSION != ''
         run: bash .github/scripts/push-image.sh
         env:
           DOCKER_USER: ${{ secrets.DOCKER_REG_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_REG_PASSWORD }}
+
+      - name: Docker Hub Description
+        if: github.ref == 'refs/heads/main'
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKER_REG_USERNAME }}
+          password: ${{ secrets.DOCKER_REG_PASSWORD }}
+          repository: ambimax/semantic-release

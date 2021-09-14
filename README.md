@@ -6,7 +6,7 @@ Generates docker image for simple semantic releasing via github actions.
 
 Semantic Release solves one major problem in software development: Releasing software with versions that both make sense and are easy to create. It does this by analyzing git commits and deriving a new version for automatic releases from them.
 
-## Git commits
+### Git commits
 
 Your git commits must follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format in order to provide meaning to semantic release.
 
@@ -51,45 +51,40 @@ BREAKING CHANGE: Other feature now requires some changes to the configuration`
 > **Note**: The JIRA-123 is the ticket you are working on and everything past the : is the description for your addition.
 > The BREAKING CHANGE Is in the body of the commit (press <kbd>Enter</kbd> twice). Here you describe, what changed in the new version that makes it incompatible with the old version. **This will increase the major version**.
 
-## Breaking changes
+### Breaking changes
 
 If a commit introduces a breaking change (regardless of the commit type), you can add a BREAKING CHANGE section to your commit. This will **automatically increase the major version** on next release.
 
-## What if I made a mistake in one of my commits?
+### What if I made a mistake in one of my commits?
 
 If you are working on a separate branch, you can simply [rewrite your commit messages](https://linuxize.com/post/change-git-commit-message/#changing-an-older-or-multiple-commits). You need to force push after the rebase.
 
-## How can I add it to my project?
+## How can I add semantic release to my project?
 
-### Javascript project
+### Configure semantic release
 
-> **Note**: This section is not detailed enough. For now it is best to see how some of our projects implement semantic release.
+The plugin can be configured in the [**semantic-release** configuration file](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#configuration).
 
-Add semantic release to your project:
+**Minimal example**
 
-```bash
-yarn add -D semantic-release
-```
-
-If you are working on a PHP project, add our [composer plugin](https://github.com/ambimax/semantic-release-composer) as well:
-
-```bash
-yarn add -D @ambimax/semantic-release-composer
-```
-
-> **Note**: You need to be authenticated with our [Node.js registry](../../package-management/npm/README.md) to install the plugin.
-
-### PHP project
-
-Ensure version field in your composer.json:
-
-```json
+```js
 {
-  "version": "0.0.0"
+  "branches": ["main", "master"],
+  "tagFormat": "${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
 }
 ```
 
-Add semantic release rules file `.releaserc.json` into project root:
+**PHP projects with composer.json example**
 
 ```js
 {
@@ -123,7 +118,7 @@ Add semantic release rules file `.releaserc.json` into project root:
 }
 ```
 
-> **Note**: If there is no composer.json, please remove line `"@ambimax/semantic-release-composer",` from .releaserc.json file
+### Add Github action for semantic release
 
 Add github action `.github/workflows/release.yml` for automatic release creation:
 
@@ -157,3 +152,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
 ```
+
+`GH_TOKEN` must have permissions to perform commits and releases on the Github repository!
+
+## Sources
+
+More information on this topic can be found on
+
+- [Semantic release project](https://github.com/semantic-release/semantic-release)
+- [The idea behind semantic versioning](https://semver.org/)
+- [Conventional commits](https://www.conventionalcommits.org/)
+
+## License
+
+[MIT License](http://choosealicense.com/licenses/mit/)
+
+## Author
+
+- [Tobias Schifftner](https://twitter.com/tschifftner), [ambimax® GmbH](https://ambimax.de)
