@@ -67,6 +67,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
 
 **Minimal example**
 
+Add semantic release configuration in `.releaserc.json`:
+
 ```js
 {
   "branches": ["main", "master"],
@@ -85,6 +87,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
 ```
 
 **PHP projects with composer.json example**
+
+Configuration sample for php composer, defined in `.releaserc.json`:
 
 ```js
 {
