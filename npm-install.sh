@@ -15,4 +15,4 @@ npm install --global \
     @semantic-release/git@^9.0.1 \
     @semantic-release/github@^7.2.3 \
     @semantic-release/release-notes-generator@^9.0.3 \
-    @semantic-release-helm@v2.1.0
+    @semantic-release-helm@^v2.1.0
