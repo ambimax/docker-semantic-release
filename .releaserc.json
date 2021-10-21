@@ -9,6 +9,13 @@
             {
                 "prepareCmd": "echo \"SEMANTIC_VERSION=${nextRelease.version}\" >> $GITHUB_ENV && echo \"GIT_VERSION=v${nextRelease.version}\" >> $GITHUB_ENV"
             }
+        ],
+        [
+            "semantic-release-helm",
+            {
+                "chartPath": "",
+                "registry": ""
+            }
         ]
     ]
 }
