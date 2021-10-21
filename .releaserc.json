@@ -13,8 +13,7 @@
         [
             "semantic-release-helm",
             {
-                "chartPath": "",
-                "registry": ""
+                "chartPath": "./chart"
             }
         ]
     ]
