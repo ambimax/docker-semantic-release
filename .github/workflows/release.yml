@@ -20,6 +20,13 @@ jobs:
           path: testrepo-semantic-composer-releases
           token: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
 
+      - uses: actions/checkout@v2
+        with:
+          repository: ambimax/testrepo-semantic-helm-releases
+          ref: main
+          path: testrepo-semantic-helm-releases
+          token: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+
       - name: Run build with tests
         run: bash bin/build
         env:

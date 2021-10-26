@@ -7,7 +7,7 @@ ENV NODE_PATH=/usr/local/lib/node_modules/
 WORKDIR /github/workspace
 
 RUN apk update \
-     && apk add --no-cache git openssh bash
+    && apk add --no-cache git openssh bash
 
 COPY npm-install.sh /opt/
 RUN --mount=type=secret,id=GITHUB_TOKEN /opt/npm-install.sh

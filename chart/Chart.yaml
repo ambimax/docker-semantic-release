@@ -1,0 +1,4 @@
+apiVersion: v2
+name: test-helm-chart
+description: "This is a Test-Chart for testing the pluging semantic-release-helm"
+version: 0.1.0

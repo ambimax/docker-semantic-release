@@ -40,14 +40,25 @@ setup_testrepo() {
     git clone git@github.com:ambimax/testrepo-semantic-composer-releases.git
 }
 
-add_testrepo_commit() {
-    cd testrepo-semantic-composer-releases || error_exit "error when entering testrepo"
+setup_testrepo_for_helm() {
+    if [ -d testrepo-semantic-helm-releases ]; then
+        output_info "Lösche vorhandenes testrepo"
+        rm -rf testrepo-semantic-helm-releases
+    fi
 
-    echo "$1" >> CHANGES.md
+    git clone git@github.com:ambimax/testrepo-semantic-helm-releases.git
+}
+
+add_testrepo_commit () {
+    FOLDER="$1"
+    MESSAGE="$2"
+    cd "$FOLDER" || error_exit "error when entering $FOLDER"
+
+    echo "$MESSAGE" >> CHANGES.md
     git add CHANGES.md
-    git -c user.name='Github Action' -c user.email='github_action@example.com' commit -m "$1"
+    git -c user.name='Github Action' -c user.email='github_actions@example.com' commit -m "$MESSAGE"
 
-    cd .. || error_exit "error when committing changes"
+    cd .. || error_exit "error on cd .."
 }
 
 validate_docker_version() {
@@ -96,8 +107,8 @@ if [ -z "${SKIP_TESTREPO_SETUP}" ]; then
     setup_testrepo
 fi
 
-add_testrepo_commit "fix: small hotfix"
-add_testrepo_commit "feat: feature added"
+add_testrepo_commit "testrepo-semantic-composer-releases" "fix: small hotfix"
+add_testrepo_commit "testrepo-semantic-composer-releases" "feat: feature added"
 
 
 ############################################################################################
@@ -136,6 +147,31 @@ assert_output "@semantic-release/release-notes-generator"
 assert_output "@ambimax/semantic-release-composer"
 assert_output "The next release version is 1.1.0"
 assert_output "1.1.0 (https://github.com/ambimax/testrepo-semantic-composer-releases"
+assert_output "### Bug Fixes"
+assert_output "### Features"
+
+
+############################################################################################
+# Validate testrepo testing semantic release for helm
+############################################################################################
+if [ -z "${SKIP_TESTREPO_SETUP}" ]; then
+    setup_testrepo_for_helm
+fi
+
+add_testrepo_commit "testrepo-semantic-helm-releases" "fix: small hotfix"
+add_testrepo_commit "testrepo-semantic-helm-releases" "feat: feature added"
+
+OUTPUT=$(docker run --rm -e GITHUB_TOKEN --workdir "/github/workspace" --volume "$PWD/testrepo-semantic-helm-releases:/github/workspace" ambimax/semantic-release:latest)
+
+echo "$OUTPUT"
+
+assert_output "Running semantic-release version"
+assert_output "@semantic-release/git"
+assert_output "@semantic-release/commit-analyzer"
+assert_output "@semantic-release/release-notes-generator"
+assert_output "semantic-release-helm"
+assert_output "The next release version is 0.2.0"
+assert_output "0.2.0 (https://github.com/ambimax/testrepo-semantic-helm-releases"
 assert_output "### Bug Fixes"
 assert_output "### Features"
 
