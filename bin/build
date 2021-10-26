@@ -46,7 +46,7 @@ setup_testrepo_for_helm() {
         rm -rf testrepo-semantic-composer-releases
         rm -rf testrepo-semantic-release-helm
     fi
-    
+
     git clone git@github.com:ambimax/testrepo-semantic-release-helm.git
 }
 
@@ -57,10 +57,9 @@ add_testrepo_helm_commit () {
     echo "$1" >> CHANGES.md
     git add CHANGES.md
     git -c user.name='Github Action' -c user.email='github_actions@example.com' commit -m "$1"
-   
+
     cd .. || error_exit "error when committing changes"
 }
-
 add_testrepo_commit() {
     cd testrepo-semantic-composer-releases || error_exit "error when entering testrepo"
 
@@ -140,6 +139,7 @@ assert_output "1.1.0 (https://github.com/ambimax/testrepo-semantic-composer-rele
 assert_output "### Bug Fixes"
 assert_output "### Features"
 
+
 ############################################################################################
 # Validate testrepo with default .releasesrc.json
 ############################################################################################
@@ -163,7 +163,6 @@ assert_output "### Features"
 ############################################################################################
 # Validate testrepo testing semantic release for helm
 ############################################################################################
-
 if [ -z "${SKIP_TESTREPO_SETUP}" ]; then
     setup_testrepo_for_helm
 fi
@@ -176,7 +175,6 @@ OUTPUT=$(docker run --rm -e GITHUB_TOKEN --workdir "/github/workspace" --volume 
 echo "$OUTPUT"
 
 assert_output "Running semantic-release version"
-assert_output "@semantic-release/changelog"
 assert_output "@semantic-release/git"
 assert_output "@semantic-release/commit-analyzer"
 assert_output "@semantic-release/release-notes-generator"

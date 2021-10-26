@@ -7,13 +7,12 @@ ENV NODE_PATH=/usr/local/lib/node_modules/
 WORKDIR /github/workspace
 
 RUN apk update \
-     && apk add --no-cache git openssh bash
+    && apk add --no-cache git openssh bash
 
 COPY npm-install.sh /opt/
 RUN --mount=type=secret,id=GITHUB_TOKEN /opt/npm-install.sh
 
 COPY etc/.releaserc.json /etc/.releaserc.json
-COPY chart/Chart.yaml /chart/Chart.yaml
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 CMD ["npx", "semantic-release"]
