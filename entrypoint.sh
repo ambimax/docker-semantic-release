@@ -3,12 +3,10 @@
 set -e
 
 echo ""
+echo "Welcome to semantic-release by Ambimax"
+echo ""
 echo "Helm version:"
 helm version
-echo ""
-
-echo ""
-echo "Welcome to semantic-release by Ambimax"
 echo ""
 
 error_exit() {
