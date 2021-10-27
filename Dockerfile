@@ -7,7 +7,9 @@ ENV NODE_PATH=/usr/local/lib/node_modules/
 WORKDIR /github/workspace
 
 RUN apk update \
-    && apk add --no-cache git openssh bash
+    && apk add --no-cache git openssh bash \
+    && apk add curl
+RUN curl -L https://get.helm.sh/helm-v3.6.3-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helm && rm -rf linux-amd64
 
 COPY npm-install.sh /opt/
 RUN --mount=type=secret,id=GITHUB_TOKEN /opt/npm-install.sh
