@@ -1,4 +1,5 @@
 node_modules
 testrepo-semantic-composer-releases
+testrepo-semantic-helm-releases
 .tmp
 .DS_STORE

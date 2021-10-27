@@ -5,6 +5,9 @@ set -e
 echo ""
 echo "Welcome to semantic-release by Ambimax"
 echo ""
+echo "Helm version:"
+helm version
+echo ""
 
 error_exit() {
     echo "$1"
