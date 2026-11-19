@@ -63,16 +63,16 @@ add_testrepo_commit () {
 
 validate_docker_version() {
     SERVER_VERSION=$(docker version -f "{{.Server.Version}}")
-    SERVER_VERSION_MAJOR=$(echo "$SERVER_VERSION"| cut -d'.' -f 1)
-    SERVER_VERSION_MINOR=$(echo "$SERVER_VERSION"| cut -d'.' -f 2)
+    SERVER_VERSION_MAJOR=$(echo "$SERVER_VERSION" | cut -d'.' -f 1)
+    SERVER_VERSION_MINOR=$(echo "$SERVER_VERSION" | cut -d'.' -f 2)
 
-    if [ "${SERVER_VERSION_MAJOR}" -ge 20 ] && \
-    [ "${SERVER_VERSION_MINOR}" -ge 10 ]; then
-        echo "Docker version >= 20.10 it's ok"
-    else
-        echo "Docker version less than 20.10 can't continue"
+    if [ "${SERVER_VERSION_MAJOR}" -lt 20 ] || \
+       { [ "${SERVER_VERSION_MAJOR}" -eq 20 ] && [ "${SERVER_VERSION_MINOR}" -lt 10 ]; }; then
+        echo "Docker version less than 20.10 can't continue (${SERVER_VERSION})"
         exit 1
     fi
+
+    echo "Docker version >= 20.10 it's ok (${SERVER_VERSION})"
 }
 
 scan_secrets_in_docker_history() {
