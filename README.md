@@ -159,6 +159,21 @@ jobs:
 
 `GH_TOKEN` must have permissions to perform commits and releases on the Github repository!
 
+#### Passing custom CLI arguments (`args`)
+
+You can pass additional `semantic-release` CLI flags via `with.args`.
+This is useful in monorepos where each chart or package uses its own configuration file (e.g. via `--extends`).
+
+```yaml
+      - name: Rollout semantic release (${{ matrix.chart }})
+        id: release
+        uses: docker://ambimax/semantic-release:latest
+        with:
+          args: --extends ./${{ matrix.chart }}/.releaserc.json
+        env:
+          GH_TOKEN: ${{ secrets.AMBIMAX_GITHUB_RELEASE_TOKEN }}
+```
+
 ## Sources
 
 More information on this topic can be found on
