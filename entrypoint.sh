@@ -1,6 +1,8 @@
 #!/bin/sh
-# Author: Tobias Schifftner
+
 set -e
+
+git config --global --add safe.directory '*' || true
 
 echo ""
 echo "Welcome to semantic-release by Ambimax"
@@ -14,12 +16,20 @@ error_exit() {
     exit 1;
 }
 
-if [ ! -f ".releaserc.json" ]; then
-    cp /etc/.releaserc.json .releaserc.json
-fi
+case " $* " in
+    *" --extends "*|*" -e "*) ;;
+    *)
+        if [ ! -f ".releaserc.json" ]; then
+            cp /etc/.releaserc.json .releaserc.json
+        fi
+        ;;
+esac
 
-
-if [ "${1#-}" != "${1}" ] || [ -z "$(command -v "${1}")" ]; then
+if [ $# -eq 0 ]; then
+    set -- npx semantic-release
+elif [ "${1#-}" != "${1}" ]; then
+    set -- npx semantic-release "$@"
+elif [ -z "$(command -v "${1}")" ]; then
     set -- node "$@"
 fi
 
