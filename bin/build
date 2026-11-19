@@ -175,7 +175,6 @@ assert_output "0.2.0 (https://github.com/ambimax/testrepo-semantic-helm-releases
 assert_output "### Bug Fixes"
 assert_output "### Features"
 
-
 ############################################################################################
 # Done
 ############################################################################################
